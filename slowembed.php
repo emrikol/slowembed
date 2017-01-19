@@ -23,7 +23,7 @@ function slowembed_custom_oembeds( $pre = null, $url, $args ) {
 	$wp_oembed = _wp_oembed_get_object();
 	$provider = $wp_oembed->get_provider( $url, $args );
 
-	if ( ! $provider || false === $data = $this->fetch( $provider, $url, $args ) ) {
+	if ( ! $provider || false === $data = $wp_oembed->fetch( $provider, $url, $args ) ) {
 		// No oEmbed provider found, search for Open Graph data.
 		$request_args = apply_filters( 'oembed_remote_get_args', $request_args, $url );
 
@@ -58,7 +58,7 @@ function slowembed_custom_oembeds( $pre = null, $url, $args ) {
 	 * @param string $url  URL of the content to be embedded.
 	 * @param array  $args Optional arguments, usually passed from a shortcode.
 	 */
-	return apply_filters( 'oembed_result', $this->data2html( $data, $url ), $url, $args );
+	return apply_filters( 'oembed_result', $wp_oembed->data2html( $data, $url ), $url, $args );
 }
 add_filter( 'pre_oembed_result', 'slowembed_custom_oembeds', 10, 3 );
 
