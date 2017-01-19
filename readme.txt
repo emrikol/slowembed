@@ -52,6 +52,6 @@ function slowembed_do_not_use_wp_oembeds( $provider ) {
         return false;
     }
     return $provider;
-} );
+}
 add_filter( 'slowembed_oembed_provider', 'slowembed_do_not_use_wp_oembeds', 10, 1 );
 ```
