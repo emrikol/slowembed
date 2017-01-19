@@ -21,6 +21,11 @@ oEmbeds are amazing, but not supported everywhere.  Sometimes I just want to sha
 
 == Changelog ==
 
+= 0.1.2 =
+
+* Bugfix, calling wrong object for WP_oEmbed class
+* Feature, added new filter `slowembed_oembed_provider` to filter oEmbed provider URL
+
 = 0.1.1 =
 
 * Fixed bug where URLs without OG data would show a blank card.
@@ -36,4 +41,17 @@ If you want to play around with this plugin, you will probably fight with the co
 ```
 add_filter( 'oembed_ttl', function() { return 0; } );
 add_filter( 'wp', function() { global $post; $GLOBALS['wp_embed']->delete_oembed_caches( $post->ID ); } );
+```
+
+If you want to modify certain oEmbed providers, you can use the `slowembed_oembed_provider` filter:
+
+```
+// Do not use WordPress core oEmbeds, use slowEmbed OG data instead.
+function slowembed_do_not_use_wp_oembeds( $provider ) {
+    if ( false !== strpos( $provider, 'wp-json/oembed/1.0/embed' ) ) {
+        return false;
+    }
+    return $provider;
+} );
+add_filter( 'slowembed_oembed_provider', 'slowembed_do_not_use_wp_oembeds', 10, 1 );
 ```
