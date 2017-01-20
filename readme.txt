@@ -21,6 +21,10 @@ oEmbeds are amazing, but not supported everywhere.  Sometimes I just want to sha
 
 == Changelog ==
 
+= 0.1.3 =
+
+* Bugfix, if an `og:image` URL is available but empty, we will no longer show a large empty box.
+
 = 0.1.2 =
 
 * Bugfix, calling wrong object for WP_oEmbed class
