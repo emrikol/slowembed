@@ -77,7 +77,7 @@ function slowembed_generate_html( $og_data ) {
 	?>
 	<div class="slowembed-preview slowembed-preview__article">
 		<div>
-			<?php if ( ! empty( $og_data['og:image'] ) ) : ?>
+			<?php if ( ! empty( $og_data['og:image'] ) && '' !== $og_data['og:image'][0]['og:image:url'] ) : ?>
 			<div>
 				<a href="<?php echo esc_url( $og_data['og:url'] ); ?>" title="<?php echo esc_attr( $og_data['og:title'] ); ?>">
 					<img class='slowembed-img-preview' src="<?php echo esc_url( jetpack_photon_url( $og_data['og:image'][0]['og:image:url'], array( 'lb' => '600x315' ) ) ); ?>" width="600" height="315" />
