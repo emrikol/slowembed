@@ -3,7 +3,7 @@
  * Plugin Name: slowembed
  * Plugin URI: https://github.com/emrikol/slowembed/
  * Description: Faux oEmbeds using Open Graph data.  Creates an extra remote request for each url.  Very slow :)
- * Version: 0.1.3
+ * Version: 0.1.4
  * Text Domain: slowembed
  * Author: Derrick Tennant
  * Author URI: https://emrikol.com/

@@ -21,6 +21,10 @@ oEmbeds are amazing, but not supported everywhere.  Sometimes I just want to sha
 
 == Changelog ==
 
+= 0.1.4 =
+
+* Bugfix, add a CSS clear to make sure that the slowEmbed style isn't messed up.
+
 = 0.1.3 =
 
 * Bugfix, if an `og:image` URL is available but empty, we will no longer show a large empty box.
