@@ -21,6 +21,14 @@ oEmbeds are amazing, but not supported everywhere.  Sometimes I just want to sha
 
 == Changelog ==
 
+= 0.1.6 =
+
+* Bugfix, Photon should now letterbox images correctly
+
+= 0.1.5 =
+
+* Bugfix, CSS now enqueues correctly on archives
+
 = 0.1.4 =
 
 * Bugfix, add a CSS clear to make sure that the slowEmbed style isn't messed up.

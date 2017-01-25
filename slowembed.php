@@ -3,7 +3,7 @@
  * Plugin Name: slowembed
  * Plugin URI: https://github.com/emrikol/slowembed/
  * Description: Faux oEmbeds using Open Graph data.  Creates an extra remote request for each url.  Very slow :)
- * Version: 0.1.4
+ * Version: 0.1.6
  * Text Domain: slowembed
  * Author: Derrick Tennant
  * Author URI: https://emrikol.com/
@@ -80,7 +80,7 @@ function slowembed_generate_html( $og_data ) {
 			<?php if ( ! empty( $og_data['og:image'] ) && '' !== $og_data['og:image'][0]['og:image:url'] ) : ?>
 			<div>
 				<a href="<?php echo esc_url( $og_data['og:url'] ); ?>" title="<?php echo esc_attr( $og_data['og:title'] ); ?>">
-					<img class='slowembed-img-preview' src="<?php echo esc_url( jetpack_photon_url( $og_data['og:image'][0]['og:image:url'], array( 'lb' => '600x315' ) ) ); ?>" width="600" height="315" />
+					<img class='slowembed-img-preview' src="<?php echo esc_url( jetpack_photon_url( $og_data['og:image'][0]['og:image:url'], array( 'lb' => '600,315' ) ) ); ?>" width="600" height="315" />
 				</a>
 			</div>
 			<?php endif; ?>
@@ -106,9 +106,35 @@ function slowembed_generate_html( $og_data ) {
 }
 
 function slowembed_eneuque_css() {
-	global $post;
+	if ( is_front_page() || is_archive() ) {
+		// Check before the loop.  If any posts use slowEmbed, enqueue the CSS!
+		global $wp_query;
+		$ids = array();
+		foreach ( $wp_query->posts as $post ) {
+			$ids[] = $post->ID;
+		}
+		$args = array(
+			'post__in' => $ids,
+			'posts_per_page' => 1,
+			'suppress_filters' => false,
+			'meta_query' => array(
+				'meta_key' => '_slowembed',
+				'meta_compare' => 'EXISTS',
+			),
+			'fields' => 'ids',
+			'no_found_rows' => true,
+			'update_post_term_cache' => false,
+		);
+		$has_slowembed = empty( get_posts( $args ) ) ? false : true;
 
-	$has_slowembed = get_post_meta( $post->ID, '_slowembed', true );
+		if ( ! empty( $has_slowembed ) ) {
+
+		}
+	} elseif ( is_single() ) {
+		global $post;
+
+		$has_slowembed = get_post_meta( $post->ID, '_slowembed', true );
+	}
 
 	if ( $has_slowembed ) {
 		wp_enqueue_style( 'slowembed', plugins_url( '/slowembed.css', __FILE__ ), array(), '0.1.0' );
