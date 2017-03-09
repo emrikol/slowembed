@@ -24,6 +24,10 @@ oEmbeds are amazing, but not supported everywhere.  Sometimes I just want to sha
 
 ## Changelog ##
 
+### 0.1.7 ###
+
+* Bugfix, removed some PHP notices
+
 ### 0.1.6 ###
 
 * Bugfix, Photon should now letterbox images correctly
