@@ -31,8 +31,6 @@ function slowembed_custom_oembeds( $pre = null, $url, $args ) {
 	 */
 	$provider = apply_filters( 'slowembed_oembed_provider', $provider, $url );
 
-	$request_args = apply_filters( 'oembed_remote_get_args', $request_args, $url );
-
 	if ( ! $provider || false === $data = $wp_oembed->fetch( $provider, $url, $args ) ) {
 		// No oEmbed provider found, search for Open Graph data.
 		$request_args = apply_filters( 'oembed_remote_get_args', $request_args, $url );
@@ -106,6 +104,7 @@ function slowembed_generate_html( $og_data ) {
 }
 
 function slowembed_eneuque_css() {
+	$has_slowembed = false;
 	if ( is_front_page() || is_archive() ) {
 		// Check before the loop.  If any posts use slowEmbed, enqueue the CSS!
 		global $wp_query;
