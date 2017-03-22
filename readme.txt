@@ -21,6 +21,12 @@ oEmbeds are amazing, but not supported everywhere.  Sometimes I just want to sha
 
 == Changelog ==
 
+= 0.1.8 =
+
+* Bugfix, CSS display issues on small screens
+* Bugfix, removed some PHP notices
+* Feature, if the OG data provides width and height for `og:image` then the image preview will resize and scale properly.
+
 = 0.1.7 =
 
 * Bugfix, removed some PHP notices

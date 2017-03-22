@@ -3,7 +3,7 @@
  * Plugin Name: slowembed
  * Plugin URI: https://github.com/emrikol/slowembed/
  * Description: Faux oEmbeds using Open Graph data.  Creates an extra remote request for each url.  Very slow :)
- * Version: 0.1.7
+ * Version: 0.1.8
  * Text Domain: slowembed
  * Author: Derrick Tennant
  * Author URI: https://emrikol.com/
@@ -32,6 +32,8 @@ function slowembed_custom_oembeds( $pre = null, $url, $args ) {
 	$provider = apply_filters( 'slowembed_oembed_provider', $provider, $url );
 
 	if ( ! $provider || false === $data = $wp_oembed->fetch( $provider, $url, $args ) ) {
+		$request_args = array();
+
 		// No oEmbed provider found, search for Open Graph data.
 		$request_args = apply_filters( 'oembed_remote_get_args', $request_args, $url );
 
@@ -78,7 +80,15 @@ function slowembed_generate_html( $og_data ) {
 			<?php if ( ! empty( $og_data['og:image'] ) && '' !== $og_data['og:image'][0]['og:image:url'] ) : ?>
 			<div>
 				<a href="<?php echo esc_url( $og_data['og:url'] ); ?>" title="<?php echo esc_attr( $og_data['og:title'] ); ?>">
-					<img class='slowembed-img-preview' src="<?php echo esc_url( jetpack_photon_url( $og_data['og:image'][0]['og:image:url'], array( 'lb' => '600,315' ) ) ); ?>" width="600" height="315" />
+				<?php
+				$image_url = $og_data['og:image'][0]['og:image:url'];
+				if ( isset( $og_data['og:image'][0]['og:image:width'] ) && $og_data['og:image'][0]['og:image:height'] ) {
+					$sizes = slowembed_resize_preview_image( $og_data['og:image'][0]['og:image:width'], $og_data['og:image'][0]['og:image:height'] );
+					?><img class='slowembed-img-preview' src="<?php echo esc_url( jetpack_photon_url( $image_url, array( 'w' => '600' ) ) ); ?>" width="600" height="<?php echo (int) $sizes['height']; ?>" /><?php
+				} else {
+					?><img class='slowembed-img-preview' src="<?php echo esc_url( jetpack_photon_url( $image_url, array( 'lb' => '600,315' ) ) ); ?>" width="600" height="315" /><?php
+				}
+				?>
 				</a>
 			</div>
 			<?php endif; ?>
@@ -91,7 +101,9 @@ function slowembed_generate_html( $og_data ) {
 				<div class="slowembed-preview__description">
 					<?php echo esc_html( $og_data['og:description'] ); ?>
 				</div>
-				<div class="slowembed-preview__url"><?php echo esc_html( parse_url( $og_data['og:url'], PHP_URL_HOST ) ); // @codingStandardsIgnoreLine. ?> | <?php echo esc_html( $og_data['og:site_name'] ); ?></div>
+				<div class="slowembed-preview__url">
+					<?php echo esc_html( wp_parse_url( $og_data['og:url'], PHP_URL_HOST ) ); ?><?php if ( isset( $og_data['og:site_name'] ) ) : ?> | <?php echo esc_html( $og_data['og:site_name'] ); ?><?php endif; ?>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -125,10 +137,6 @@ function slowembed_eneuque_css() {
 			'update_post_term_cache' => false,
 		);
 		$has_slowembed = empty( get_posts( $args ) ) ? false : true;
-
-		if ( ! empty( $has_slowembed ) ) {
-
-		}
 	} elseif ( is_single() ) {
 		global $post;
 
@@ -136,7 +144,40 @@ function slowembed_eneuque_css() {
 	}
 
 	if ( $has_slowembed ) {
-		wp_enqueue_style( 'slowembed', plugins_url( '/slowembed.css', __FILE__ ), array(), '0.1.0' );
+		wp_enqueue_style( 'slowembed', plugins_url( '/slowembed.css', __FILE__ ), array(), '0.1.8' );
 	}
 }
 add_action( 'wp', 'slowembed_eneuque_css' );
+
+function slowembed_resize_preview_image( $width, $height ) {
+	$max_width = 600; // Magic number!
+	$max_height = 2000; // Magic number!
+
+	if ( $width !== $height ) {
+		if ( $width > $height ) {
+			$new_width = $max_width;
+			$new_height = ( ( $new_width * $height ) / $width );
+
+			if ( $new_height > $max_height ) {
+				$new_height = $max_height;
+				$new_width = ( ( $width * $new_height ) / $height );
+			}
+		} else {
+			$new_height = $max_height;
+			$new_width = ( ( $width * $new_height ) / $height );
+
+			if ( $new_width > $max_width ) {
+				$new_width = $max_width;
+				$new_height = ( ( $new_width * $height ) / $width );
+			}
+		}
+	} else {
+		$new_width = min( $max_width, $max_height );
+		$new_height = min( $max_width, $max_height );
+	}
+
+	return array(
+		'height' => (int) $new_height,
+		'width' => (int) $new_width,
+	);
+}
